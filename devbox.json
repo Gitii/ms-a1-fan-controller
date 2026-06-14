@@ -1,0 +1,41 @@
+{
+    "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.14.0/.schema/devbox.schema.json",
+    "packages": [
+        "gcc@latest",
+        "gnumake@latest",
+        "python3@latest",
+        "acpica-tools@latest",
+        "openssl@latest",
+        "lm_sensors@latest"
+    ],
+    "env": {
+        "KDIR": "/lib/modules/$(uname -r)/build"
+    },
+    "shell": {
+        "init_hook": [
+            "echo 'MS-A1 EC kernel module dev environment'",
+            "echo \"Kernel:    $(uname -r)\"",
+            "echo \"Headers:   $KDIR\"",
+            "[ -d \"$KDIR\" ] || echo 'WARNING: kernel headers not installed (apt install linux-headers-$(uname -r))'"
+        ],
+        "scripts": {
+            "build":           ["make"],
+            "user":            ["make user"],
+            "sign":            ["make sign"],
+            "install":         ["make install"],
+            "load":            ["make load"],
+            "unload":          ["make unload"],
+            "reload":          ["make reload"],
+            "status":          ["make status"],
+            "setup-mok":       ["make setup-mok"],
+            "dkms-install":    ["make dkms-install"],
+            "dkms-uninstall":  ["make dkms-uninstall"],
+            "read":            ["./ms_a1_ec_read"],
+            "sensors":         ["sensors | sed -n '/msa1_ec/,/^$/p'"],
+            "dump-d5":         ["sudo cat /sys/kernel/debug/msa1_ec/dump_d5"],
+            "dump-dd":         ["sudo cat /sys/kernel/debug/msa1_ec/dump_dd"],
+            "dmesg":           ["sudo dmesg | grep -i msa1"],
+            "clean":           ["make clean"]
+        }
+    }
+}
