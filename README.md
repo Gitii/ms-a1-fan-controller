@@ -120,8 +120,7 @@ sudo mokutil --delete /var/lib/shim-signed/mok/msa1.der   # optional
 ├── dkms.conf               DKMS module manifest
 ├── Makefile                top-level convenience targets
 ├── devbox.json             devbox environment (gcc, make, openssl, lm_sensors)
-├── LICENSE                 GPL-2.0
-└── legacy/                 original userspace POC (broken under Secure Boot; kept for reference)
+└── LICENSE                 GPL-2.0
 ```
 
 ## Module parameters
@@ -247,15 +246,15 @@ Fan RPM via cmd 0xD5 (2 bytes per fan)
 
 [aida-thread]: https://forums.aida64.com/topic/16404-aida64-doesnt-detect-any-fans-of-minisforum-ms-a1-barebone/
 
-## Why the legacy tools failed
+## Why userspace I/O doesn't work
 
-The `legacy/` directory contains the original POC (`ms_a1_ec_read.c`,
-`ms_a1_ec_read_sb.c`, `ms_a1_ec_reader.py`). All three are blocked by
-the kernel's **integrity lockdown** mode that ships with Secure Boot:
+The obvious approaches — `iopl(3)` + `inb`/`outb`, or `/dev/port` — are all
+blocked by the kernel's **integrity lockdown** mode that ships with Secure Boot:
 
-- `ms_a1_ec_read.c` uses `iopl(3)` -> blocked
-- `ms_a1_ec_read_sb.c` uses `/dev/port` -> also blocked (despite the `_sb` suffix)
-- the `ec_sys` fallback would have worked, but MS-A1 doesn't expose an
+- `iopl(3)` / `ioperm()` -> blocked
+- `/dev/port` read & write -> blocked
+- `/dev/mem`, `/dev/kmem` -> blocked
+- the `ec_sys` debugfs fallback would have worked, but MS-A1 doesn't expose an
   ACPI EC at all, so `/sys/kernel/debug/ec/ec0/io` is never created
 
 Enrolling a MOK key does **not** lift lockdown - that's a common

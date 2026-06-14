@@ -16,10 +16,6 @@ Module.symvers
 # Compiled userspace binary
 /ms_a1_ec_read
 
-# Legacy prebuilt binaries (source is kept, binaries are not)
-legacy/ms_a1_ec_read
-legacy/ms_a1_ec_read_sb
-
 # devbox / direnv local state
 .devbox/
 .venv/

@@ -93,12 +93,11 @@ regardless of any MOK enrollment:
 | `/dev/mem`, `/dev/kmem` | blocked |
 | Loading unsigned kernel modules | blocked |
 
-The original proof-of-concept tools (preserved in [`legacy/`](../legacy/)) all
-fail here:
+Every userspace approach we tried failed here:
 
-- `ms_a1_ec_read.c` — uses `iopl()` → **blocked**
-- `ms_a1_ec_read_sb.c` — uses `/dev/port` (despite the `_sb` "secure boot" name) → **also blocked**
-- the `ec_sys` fallback — never works because there is no ACPI EC
+- `iopl()` + `inb`/`outb` → **blocked**
+- `/dev/port` (despite a "secure boot" rename) → **also blocked**
+- the `ec_sys` debugfs fallback → never works because there is no ACPI EC
 
 **Common misconception:** enrolling your own MOK key does *not* lift lockdown.
 MOK only lets the kernel trust modules *you* sign. Lockdown stays active as long
